@@ -120,9 +120,16 @@ def main():
                                 
                                 # Column 3: Current Prices
                                 with cols[2]:
+                                    if f"prices_{index}" in st.session_state:
+                                        prices = st.session_state[f"prices_{index}"]
+                                    else:
+                                        prices = {
+                                            'new_price': row['New Price Range'],
+                                            'used_price': row['Used Price Range']
+                                        }
                                     st.write("**Current Prices:**")
-                                    st.write(f"New: {row['New Price Range']}")
-                                    st.write(f"Used: {row['Used Price Range']}")
+                                    st.write(f"New: {prices['new_price']}")
+                                    st.write(f"Used: {prices['used_price']}")
                                 
                                 # Column 4: Features
                                 with cols[3]:
@@ -133,14 +140,13 @@ def main():
                                 with cols[4]:
                                     if st.button("Update", key=f"update_{index}"):
                                         with st.spinner("Updating prices..."):
-                                            prices = search_prices(
+                                            updated_prices = search_prices(
                                                 item_name,
                                                 row['Type'],
                                                 brand
                                             )
-                                            st.write("**Updated Prices:**")
-                                            st.write(f"New: {prices['new_price']}")
-                                            st.write(f"Used: {prices['used_price']}")
+                                            st.session_state[f"prices_{index}"] = updated_prices
+                                            st.rerun()
                                 
                                 st.divider()
                     except json.JSONDecodeError as e:
