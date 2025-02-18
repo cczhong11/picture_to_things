@@ -4,6 +4,7 @@ from PIL import Image
 import json
 import os
 from gemini_helper import get_description
+from price_helper import search_prices
 
 # Configure page
 st.set_page_config(page_title="Image Analyzer", layout="wide")
@@ -58,7 +59,7 @@ def main():
                         cleaned_description = cleaned_description.strip()
 
                         items = json.loads(cleaned_description)
-                        
+
                         # Prepare data for table
                         table_data = []
                         for item in items:
@@ -69,7 +70,6 @@ def main():
                             )
                             focus = "✓" if item["details"]["is_main_focus"] else ""
                             # Get price estimates
-                            from price_helper import search_prices
 
                             prices = search_prices(
                                 item["item_name"],
@@ -93,7 +93,7 @@ def main():
 
                         # Update session state with new data
                         st.session_state.table_data = table_data
-                        
+
                     except json.JSONDecodeError as e:
                         st.error(f"Failed to parse analysis results: {str(e)}")
                         st.write("Raw response:")
@@ -108,86 +108,85 @@ def main():
         if "table_data" in st.session_state:
             st.write("### Items Detected")
             st.write("Edit item names and use update buttons to search for new prices")
-            
+
             # Convert table data to DataFrame for editing
             import pandas as pd
+
             df = pd.DataFrame(st.session_state.table_data)
 
             # Create columns for layout
             for index, row in df.iterrows():
-                            with st.container():
-                                cols = st.columns([3, 2, 2, 2, 1])
+                with st.container():
+                    cols = st.columns([3, 2, 2, 2, 1])
 
-                                # Column 1: Item details
-                                with cols[0]:
-                                    item_name = st.text_input(
-                                        "Item Name",
-                                        row["Item Name"],
-                                        key=f"name_{index}",
-                                    )
-                                    brand = st.text_input(
-                                        "Brand", row["Brand"], key=f"brand_{index}"
-                                    )
-                                    st.write(f"**Type:** {row['Type']}")
+                    # Column 1: Item details
+                    with cols[0]:
+                        item_name = st.text_input(
+                            "Item Name",
+                            row["Item Name"],
+                            key=f"name_{index}",
+                        )
+                        brand = st.text_input(
+                            "Brand", row["Brand"], key=f"brand_{index}"
+                        )
+                        st.write(f"**Type:** {row['Type']}")
 
-                                # Column 2: Color and Condition
-                                with cols[1]:
-                                    st.write(f"**Color:** {row['Color']}")
-                                    st.write(f"**Condition:** {row['Condition']}")
-                                    if row["Main Focus"] == "✓":
-                                        st.write("**Main Focus:** Yes")
+                    # Column 2: Color and Condition
+                    with cols[1]:
+                        st.write(f"**Color:** {row['Color']}")
+                        st.write(f"**Condition:** {row['Condition']}")
+                        if row["Main Focus"] == "✓":
+                            st.write("**Main Focus:** Yes")
 
-                                # Column 3: Current Prices and Links
-                                with cols[2]:
-                                    if f"prices_{index}" in st.session_state:
-                                        prices = st.session_state[f"prices_{index}"]
-                                    else:
-                                        prices = {
-                                            "new_price": row["New Price Range"],
-                                            "used_price": row["Used Price Range"],
-                                            "amazon_url": f"https://www.amazon.com/s?k={row['Brand']}+{row['Item Name']}+{row['Type']}".replace(
-                                                " ", "+"
-                                            ),
-                                            "ebay_url": f"https://www.ebay.com/sch/i.html?_nkw={row['Brand']}+{row['Item Name']}+{row['Type']}".replace(
-                                                " ", "+"
-                                            ),
-                                        }
-                                    st.write("**Current Prices:**")
-                                    st.write(f"New: {prices['new_price']}")
-                                    st.write(f"Used: {prices['used_price']}")
-                                    st.write("**Search Links:**")
-                                    st.markdown(
-                                        f"[Amazon]({prices['amazon_url']}) | [eBay]({prices['ebay_url']})"
-                                    )
+                    # Column 3: Current Prices and Links
+                    with cols[2]:
+                        if f"prices_{index}" in st.session_state:
+                            prices = st.session_state[f"prices_{index}"]
+                        else:
+                            prices = {
+                                "new_price": row["New Price Range"],
+                                "used_price": row["Used Price Range"],
+                                "amazon_url": f"https://www.amazon.com/s?k={row['Brand']}+{row['Item Name']}+{row['Type']}".replace(
+                                    " ", "+"
+                                ),
+                                "ebay_url": f"https://www.ebay.com/sch/i.html?_nkw={row['Brand']}+{row['Item Name']}+{row['Type']}".replace(
+                                    " ", "+"
+                                ),
+                            }
+                        st.write("**Current Prices:**")
+                        st.write(f"New: {prices['new_price']}")
+                        st.write(f"Used: {prices['used_price']}")
+                        st.write("**Search Links:**")
+                        st.markdown(
+                            f"[Amazon]({prices['amazon_url']}) | [eBay]({prices['ebay_url']})"
+                        )
 
-                                # Column 4: Features
-                                with cols[3]:
-                                    st.write("**Features:**")
-                                    st.write(row["Distinctive Features"])
+                    # Column 4: Features
+                    with cols[3]:
+                        st.write("**Features:**")
+                        st.write(row["Distinctive Features"])
 
-                                # Column 5: Update button
-                                with cols[4]:
-                                    if st.button("Update", key=f"update_{index}"):
-                                        with st.spinner("Updating prices..."):
-                                            updated_prices = search_prices(
-                                                item_name, row["Type"], brand
-                                            )
-                                            # Update the row in session state
-                                            st.session_state.table_data[index][
-                                                "New Price Range"
-                                            ] = updated_prices["new_price"]
-                                            st.session_state.table_data[index][
-                                                "Used Price Range"
-                                            ] = updated_prices["used_price"]
-                                            st.session_state.table_data[index][
-                                                "Item Name"
-                                            ] = item_name
-                                            st.session_state.table_data[index][
-                                                "Brand"
-                                            ] = brand
-                                            st.rerun()
+                    # Column 5: Update button
+                    with cols[4]:
+                        if st.button("Update", key=f"update_{index}"):
+                            with st.spinner("Updating prices..."):
+                                updated_prices = search_prices(
+                                    item_name, row["Type"], brand
+                                )
+                                # Update the row in session state
+                                st.session_state.table_data[index][
+                                    "New Price Range"
+                                ] = updated_prices["new_price"]
+                                st.session_state.table_data[index][
+                                    "Used Price Range"
+                                ] = updated_prices["used_price"]
+                                st.session_state.table_data[index][
+                                    "Item Name"
+                                ] = item_name
+                                st.session_state.table_data[index]["Brand"] = brand
+                                st.rerun()
 
-                                st.divider()
+                    st.divider()
 
 
 if __name__ == "__main__":
