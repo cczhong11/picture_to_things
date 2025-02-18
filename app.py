@@ -48,8 +48,23 @@ def main():
                 description = get_description(temp_path, model)
 
                 if description:
-                    st.write("### Analysis Results:")
-                    st.write(description)
+                    try:
+                        items = json.loads(description)
+                        st.write("### Items Detected:")
+                        for item in items:
+                            with st.expander(f"📦 {item['item_name']}" + (" (Main Focus)" if item['details']['is_main_focus'] else "")):
+                                st.write(f"**Type:** {item['details']['type']}")
+                                if item['details']['brand']:
+                                    st.write(f"**Brand:** {item['details']['brand']}")
+                                st.write(f"**Color:** {item['details']['color']}")
+                                st.write(f"**Condition:** {item['details']['condition']}")
+                                if item['details']['distinctive_features']:
+                                    st.write("**Distinctive Features:**")
+                                    for feature in item['details']['distinctive_features']:
+                                        st.write(f"- {feature}")
+                    except json.JSONDecodeError:
+                        st.error("Failed to parse analysis results")
+                        st.code(description)
                 else:
                     st.error("Failed to analyze image")
 

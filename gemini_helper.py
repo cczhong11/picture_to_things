@@ -12,23 +12,24 @@ def get_description(image_path, model: genai.GenerativeModel):
         image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
         prompt = """
-        Analyze this image and return a JSON object focusing on the main items/objects in the picture.
-        Use this structure:
+        Analyze this image and return a JSON array of items/objects in the picture.
+        For each item use this structure:
         {
-            "main_focus": "describe the primary object/item that is the focus of the image",
-            "item_details": {
+            "item_name": "name of the item",
+            "details": {
                 "type": "type/category of the item",
                 "brand": "brand name if visible/identifiable",
                 "color": "color(s) of the item",
                 "condition": "condition or state of the item",
-                "distinctive_features": ["list any notable features or characteristics"]
-            },
-            "background_items": ["list any other visible items in the background, if any"]
+                "distinctive_features": ["list any notable features or characteristics"],
+                "is_main_focus": boolean indicating if this is the main focus of the image
+            }
         }
         
-        Return ONLY the JSON object, no additional text.
-        Be precise and detailed about the main item in focus.
-        If the brand is visible, make sure to include it accurately.
+        Return ONLY the JSON array of items, no additional text.
+        List the main focus item first, followed by other visible items.
+        Be precise and detailed about each item.
+        If brands are visible, make sure to include them accurately.
         """
 
         # Generate description
