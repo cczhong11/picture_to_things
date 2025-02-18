@@ -85,8 +85,54 @@ def main():
                                 "Distinctive Features": features
                             })
                         
-                        # Display as table
-                        st.table(table_data)
+                        # Convert table data to DataFrame for editing
+                        import pandas as pd
+                        df = pd.DataFrame(table_data)
+                        
+                        # Display editable dataframe
+                        st.write("Edit item names and click 'Update Prices' to search again")
+                        edited_df = st.data_editor(
+                            df,
+                            column_config={
+                                "Main Focus": st.column_config.Column(
+                                    width="small",
+                                    disabled=True
+                                ),
+                                "Item Name": st.column_config.TextColumn(
+                                    width="medium",
+                                    disabled=False
+                                ),
+                                "Type": st.column_config.Column(disabled=True),
+                                "Brand": st.column_config.Column(disabled=True),
+                                "Color": st.column_config.Column(disabled=True),
+                                "Condition": st.column_config.Column(disabled=True),
+                                "New Price Range": st.column_config.Column(disabled=True),
+                                "Used Price Range": st.column_config.Column(disabled=True),
+                                "Distinctive Features": st.column_config.Column(disabled=True),
+                            }
+                        )
+                        
+                        # Add button to update prices
+                        if st.button("Update Prices"):
+                            with st.spinner("Updating prices..."):
+                                # Update prices for each item
+                                updated_data = []
+                                for _, row in edited_df.iterrows():
+                                    prices = search_prices(
+                                        row['Item Name'],
+                                        row['Type'],
+                                        row['Brand']
+                                    )
+                                    row['New Price Range'] = prices['new_price']
+                                    row['Used Price Range'] = prices['used_price']
+                                    updated_data.append(row)
+                                
+                                # Display updated table
+                                st.data_editor(
+                                    pd.DataFrame(updated_data),
+                                    column_config={col: st.column_config.Column(disabled=True) 
+                                                 for col in df.columns}
+                                )
                     except json.JSONDecodeError as e:
                         st.error(f"Failed to parse analysis results: {str(e)}")
                         st.write("Raw response:")
