@@ -58,18 +58,25 @@ def main():
                         cleaned_description = cleaned_description.strip()
                         
                         items = json.loads(cleaned_description)
-                        st.write("### Items Detected:")
+                        st.write("### Items Detected")
+                        
+                        # Prepare data for table
+                        table_data = []
                         for item in items:
-                            with st.expander(f"📦 {item['item_name']}" + (" (Main Focus)" if item['details']['is_main_focus'] else "")):
-                                st.write(f"**Type:** {item['details']['type']}")
-                                if item['details']['brand']:
-                                    st.write(f"**Brand:** {item['details']['brand']}")
-                                st.write(f"**Color:** {item['details']['color']}")
-                                st.write(f"**Condition:** {item['details']['condition']}")
-                                if item['details']['distinctive_features']:
-                                    st.write("**Distinctive Features:**")
-                                    for feature in item['details']['distinctive_features']:
-                                        st.write(f"- {feature}")
+                            features = ", ".join(item['details']['distinctive_features']) if item['details']['distinctive_features'] else ""
+                            focus = "✓" if item['details']['is_main_focus'] else ""
+                            table_data.append({
+                                "Main Focus": focus,
+                                "Item Name": item['item_name'],
+                                "Type": item['details']['type'],
+                                "Brand": item['details']['brand'],
+                                "Color": item['details']['color'],
+                                "Condition": item['details']['condition'],
+                                "Distinctive Features": features
+                            })
+                        
+                        # Display as table
+                        st.table(table_data)
                     except json.JSONDecodeError as e:
                         st.error(f"Failed to parse analysis results: {str(e)}")
                         st.write("Raw response:")
