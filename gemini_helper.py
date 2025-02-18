@@ -12,15 +12,21 @@ def get_description(image_path, model: genai.GenerativeModel):
         image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
         prompt = """
-        Analyze this image and return a JSON object with the following structure:
+        Analyze this image and return a JSON object focusing on the main items/objects in the picture.
+        Use this structure:
         {
-            "scene": "description of the scene (indoor/outdoor, environment)",
-            "people": "description of people if any (count, actions, expressions)",
-            "objects": ["list of main objects identified"],
-            "mood": "overall mood or emotion of the scene"
+            "main_focus": "describe the primary object/item that is the focus of the image",
+            "item_details": {
+                "type": "type/category of the item",
+                "color": "color(s) of the item",
+                "condition": "condition or state of the item",
+                "distinctive_features": ["list any notable features or characteristics"]
+            },
+            "background_items": ["list any other visible items in the background, if any"]
         }
         
         Return ONLY the JSON object, no additional text.
+        Be precise and detailed about the main item in focus.
         """
 
         # Generate description
