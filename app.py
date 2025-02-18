@@ -58,8 +58,7 @@ def main():
                         cleaned_description = cleaned_description.strip()
 
                         items = json.loads(cleaned_description)
-                        st.write("### Items Detected")
-
+                        
                         # Prepare data for table
                         table_data = []
                         for item in items:
@@ -92,14 +91,27 @@ def main():
                                 }
                             )
 
-                        # Convert table data to DataFrame for editing
-                        import pandas as pd
+                        # Update session state with new data
+                        st.session_state.table_data = table_data
+                        
+                    except json.JSONDecodeError as e:
+                        st.error(f"Failed to parse analysis results: {str(e)}")
+                        st.write("Raw response:")
+                        st.code(description)
+                else:
+                    st.error("Failed to analyze image")
 
-                        # Initialize or get table data from session state
-                        if "table_data" not in st.session_state:
-                            st.session_state.table_data = table_data
+                # Clean up temp file
+                os.remove(temp_path)
 
-                        df = pd.DataFrame(st.session_state.table_data)
+        # Display table if data exists
+        if "table_data" in st.session_state:
+            st.write("### Items Detected")
+            st.write("Edit item names and use update buttons to search for new prices")
+            
+            # Convert table data to DataFrame for editing
+            import pandas as pd
+            df = pd.DataFrame(st.session_state.table_data)
 
                         # Display items in a more interactive format
                         st.write(
@@ -178,7 +190,7 @@ def main():
                                             st.session_state.table_data[index][
                                                 "Brand"
                                             ] = brand
-                                            # st.rerun()
+                                            st.rerun()
 
                                 st.divider()
                     except json.JSONDecodeError as e:
