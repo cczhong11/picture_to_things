@@ -8,18 +8,23 @@ from gemini_helper import get_description
 # Configure page
 st.set_page_config(page_title="Image Analyzer", layout="wide")
 
-# Initialize Gemini
-GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
-if not GOOGLE_API_KEY:
-    st.error("Please set GOOGLE_API_KEY environment variable")
-    st.stop()
-
-genai.configure(api_key=GOOGLE_API_KEY)
-model = genai.GenerativeModel('gemini-pro-vision')
-
 def main():
     st.title("Image Content Analyzer")
     st.write("Upload an image to analyze its contents using Google Gemini")
+
+    # API Key input
+    api_key = st.text_input("Enter your Google Gemini API Key", type="password")
+    if not api_key:
+        st.warning("Please enter your Google Gemini API Key to proceed")
+        st.stop()
+    
+    # Initialize Gemini
+    try:
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel('gemini-pro-vision')
+    except Exception as e:
+        st.error(f"Error initializing Gemini: {str(e)}")
+        st.stop()
 
     # File uploader
     uploaded_file = st.file_uploader("Choose an image file", type=['png', 'jpg', 'jpeg'])
