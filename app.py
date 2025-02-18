@@ -87,7 +87,12 @@ def main():
                         
                         # Convert table data to DataFrame for editing
                         import pandas as pd
-                        df = pd.DataFrame(table_data)
+                        
+                        # Initialize or get table data from session state
+                        if 'table_data' not in st.session_state:
+                            st.session_state.table_data = table_data
+                        
+                        df = pd.DataFrame(st.session_state.table_data)
                         
                         # Display items in a more interactive format
                         st.write("Edit item names and use update buttons to search for new prices")
@@ -145,7 +150,11 @@ def main():
                                                 row['Type'],
                                                 brand
                                             )
-                                            st.session_state[f"prices_{index}"] = updated_prices
+                                            # Update the row in session state
+                                            st.session_state.table_data[index]['New Price Range'] = updated_prices['new_price']
+                                            st.session_state.table_data[index]['Used Price Range'] = updated_prices['used_price']
+                                            st.session_state.table_data[index]['Item Name'] = item_name
+                                            st.session_state.table_data[index]['Brand'] = brand
                                             st.rerun()
                                 
                                 st.divider()
