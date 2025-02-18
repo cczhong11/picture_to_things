@@ -65,6 +65,14 @@ def main():
                         for item in items:
                             features = ", ".join(item['details']['distinctive_features']) if item['details']['distinctive_features'] else ""
                             focus = "✓" if item['details']['is_main_focus'] else ""
+                            # Get price estimates
+                            from price_helper import search_prices
+                            prices = search_prices(
+                                item['item_name'],
+                                item['details']['type'],
+                                item['details']['brand']
+                            )
+                            
                             table_data.append({
                                 "Main Focus": focus,
                                 "Item Name": item['item_name'],
@@ -72,6 +80,8 @@ def main():
                                 "Brand": item['details']['brand'],
                                 "Color": item['details']['color'],
                                 "Condition": item['details']['condition'],
+                                "New Price Range": prices['new_price'],
+                                "Used Price Range": prices['used_price'],
                                 "Distinctive Features": features
                             })
                         
