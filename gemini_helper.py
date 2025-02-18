@@ -18,6 +18,7 @@ def get_description(image_path, model: genai.GenerativeModel):
             "main_focus": "describe the primary object/item that is the focus of the image",
             "item_details": {
                 "type": "type/category of the item",
+                "brand": "brand name if visible/identifiable",
                 "color": "color(s) of the item",
                 "condition": "condition or state of the item",
                 "distinctive_features": ["list any notable features or characteristics"]
@@ -27,6 +28,7 @@ def get_description(image_path, model: genai.GenerativeModel):
         
         Return ONLY the JSON object, no additional text.
         Be precise and detailed about the main item in focus.
+        If the brand is visible, make sure to include it accurately.
         """
 
         # Generate description
