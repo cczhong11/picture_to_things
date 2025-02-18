@@ -20,14 +20,25 @@ def search_amazon(query):
     url = f'https://www.amazon.com/s?k={query}'
     
     try:
+        print(f"Searching Amazon for: {query}")
         response = requests.get(url, headers=headers, timeout=10)
+        print(f"Amazon status code: {response.status_code}")
+        
+        if response.status_code != 200:
+            print(f"Amazon error response: {response.text[:500]}")
+            return []
+            
         soup = BeautifulSoup(response.text, 'html.parser')
         
         prices = []
-        for price in soup.select('.a-price-whole'):
+        price_elements = soup.select('.a-price-whole')
+        print(f"Found {len(price_elements)} price elements on Amazon")
+        
+        for price in price_elements:
             clean = clean_price(price.text)
             if clean:
                 prices.append(clean)
+                print(f"Found Amazon price: ${clean:.2f}")
         
         return prices[:5] if prices else []
     except Exception as e:
@@ -42,14 +53,25 @@ def search_ebay(query):
     url = f'https://www.ebay.com/sch/i.html?_nkw={query}'
     
     try:
+        print(f"Searching eBay for: {query}")
         response = requests.get(url, headers=headers, timeout=10)
+        print(f"eBay status code: {response.status_code}")
+        
+        if response.status_code != 200:
+            print(f"eBay error response: {response.text[:500]}")
+            return []
+            
         soup = BeautifulSoup(response.text, 'html.parser')
         
         prices = []
-        for price in soup.select('.s-item__price'):
+        price_elements = soup.select('.s-item__price')
+        print(f"Found {len(price_elements)} price elements on eBay")
+        
+        for price in price_elements:
             clean = clean_price(price.text)
             if clean:
                 prices.append(clean)
+                print(f"Found eBay price: ${clean:.2f}")
         
         return prices[:5] if prices else []
     except Exception as e:
@@ -74,6 +96,7 @@ def search_prices(item_name, item_type, brand):
         # Construct search query
         search_query = f"{brand} {item_name} {item_type}".strip()
         search_query = re.sub(r'\s+', '+', search_query)
+        print(f"\nStarting price search for: {search_query}")
         
         # Search both platforms concurrently
         with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
