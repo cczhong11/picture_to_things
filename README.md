@@ -24,7 +24,7 @@ cd <repository-name>
 pip install streamlit google-generativeai Pillow requests beautifulsoup4
 ```
 
-3. Get a Google Gemini API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
+3. Get a Google Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ## Usage
 
