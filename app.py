@@ -104,8 +104,12 @@ def main():
                                         row['Item Name'],
                                         key=f"name_{index}"
                                     )
+                                    brand = st.text_input(
+                                        "Brand",
+                                        row['Brand'],
+                                        key=f"brand_{index}"
+                                    )
                                     st.write(f"**Type:** {row['Type']}")
-                                    st.write(f"**Brand:** {row['Brand']}")
                                 
                                 # Column 2: Color and Condition
                                 with cols[1]:
@@ -132,7 +136,7 @@ def main():
                                             prices = search_prices(
                                                 item_name,
                                                 row['Type'],
-                                                row['Brand']
+                                                brand
                                             )
                                             st.write("**Updated Prices:**")
                                             st.write(f"New: {prices['new_price']}")
