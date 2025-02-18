@@ -8,6 +8,7 @@ from gemini_helper import get_description
 # Configure page
 st.set_page_config(page_title="Image Analyzer", layout="wide")
 
+
 def main():
     st.title("Image Content Analyzer")
     st.write("Upload an image to analyze its contents using Google Gemini")
@@ -17,17 +18,19 @@ def main():
     if not api_key:
         st.warning("Please enter your Google Gemini API Key to proceed")
         st.stop()
-    
+
     # Initialize Gemini
     try:
         genai.configure(api_key=api_key)
-        model = genai.GenerativeModel('gemini-pro-vision')
+        model = genai.GenerativeModel("gemini-2.0-flash")
     except Exception as e:
         st.error(f"Error initializing Gemini: {str(e)}")
         st.stop()
 
     # File uploader
-    uploaded_file = st.file_uploader("Choose an image file", type=['png', 'jpg', 'jpeg'])
+    uploaded_file = st.file_uploader(
+        "Choose an image file", type=["png", "jpg", "jpeg"]
+    )
 
     if uploaded_file:
         # Display the uploaded image
@@ -40,18 +43,19 @@ def main():
                 # Save temporary file
                 temp_path = "temp_image.jpg"
                 image.save(temp_path)
-                
+
                 # Get description
                 description = get_description(temp_path, model)
-                
+
                 if description:
                     st.write("### Analysis Results:")
                     st.write(description)
                 else:
                     st.error("Failed to analyze image")
-                
+
                 # Clean up temp file
                 os.remove(temp_path)
+
 
 if __name__ == "__main__":
     main()
