@@ -89,7 +89,9 @@ def search_prices(item_name, item_type, brand):
             return {
                 "new_price": "N/A",
                 "used_price": "N/A",
-                "search_query": search_query
+                "search_query": search_query,
+                "amazon_url": f"https://www.amazon.com/s?k={search_query}",
+                "ebay_url": f"https://www.ebay.com/sch/i.html?_nkw={search_query}"
             }
         
         # Sort prices and estimate new vs used
@@ -101,7 +103,9 @@ def search_prices(item_name, item_type, brand):
         return {
             "new_price": format_price_range(higher_prices),
             "used_price": format_price_range(lower_prices),
-            "search_query": search_query
+            "search_query": search_query,
+            "amazon_url": f"https://www.amazon.com/s?k={search_query}",
+            "ebay_url": f"https://www.ebay.com/sch/i.html?_nkw={search_query}"
         }
         
     except Exception as e:

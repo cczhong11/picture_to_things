@@ -123,18 +123,22 @@ def main():
                                     if row['Main Focus'] == "✓":
                                         st.write("**Main Focus:** Yes")
                                 
-                                # Column 3: Current Prices
+                                # Column 3: Current Prices and Links
                                 with cols[2]:
                                     if f"prices_{index}" in st.session_state:
                                         prices = st.session_state[f"prices_{index}"]
                                     else:
                                         prices = {
                                             'new_price': row['New Price Range'],
-                                            'used_price': row['Used Price Range']
+                                            'used_price': row['Used Price Range'],
+                                            'amazon_url': f"https://www.amazon.com/s?k={row['Brand']}+{row['Item Name']}+{row['Type']}".replace(' ', '+'),
+                                            'ebay_url': f"https://www.ebay.com/sch/i.html?_nkw={row['Brand']}+{row['Item Name']}+{row['Type']}".replace(' ', '+')
                                         }
                                     st.write("**Current Prices:**")
                                     st.write(f"New: {prices['new_price']}")
                                     st.write(f"Used: {prices['used_price']}")
+                                    st.write("**Search Links:**")
+                                    st.markdown(f"[Amazon]({prices['amazon_url']}) | [eBay]({prices['ebay_url']})")
                                 
                                 # Column 4: Features
                                 with cols[3]:
