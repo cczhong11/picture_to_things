@@ -70,12 +70,22 @@ def main():
                             )
                             focus = "✓" if item["details"]["is_main_focus"] else ""
                             # Get price estimates
-
-                            prices = search_prices(
-                                item["item_name"],
-                                item["details"]["type"],
-                                item["details"]["brand"],
-                            )
+                            try:
+                                prices = search_prices(
+                                    item["item_name"],
+                                    item["details"]["type"],
+                                    item["details"]["brand"],
+                                )
+                                print(f"Price search results: {prices}")
+                            except Exception as e:
+                                print(f"Error in price search: {str(e)}")
+                                prices = {
+                                    "new_price": "Error",
+                                    "used_price": "Error",
+                                    "search_query": "",
+                                    "amazon_url": "",
+                                    "ebay_url": ""
+                                }
 
                             table_data.append(
                                 {
