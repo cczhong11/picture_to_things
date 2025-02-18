@@ -15,6 +15,7 @@ def main():
     st.write("Upload an image to analyze its contents using Google Gemini")
 
     # API Key input
+    st.markdown("Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)")
     api_key = st.text_input("Enter your Google Gemini API Key", type="password")
     if not api_key:
         st.warning("Please enter your Google Gemini API Key to proceed")
