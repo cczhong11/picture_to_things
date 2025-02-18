@@ -12,24 +12,28 @@ def get_description(image_path, model: genai.GenerativeModel):
         image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
         prompt = """
-        Analyze this image and return a JSON array of items/objects in the picture.
-        For each item use this structure:
-        {
-            "item_name": "name of the item",
-            "details": {
-                "type": "type/category of the item",
-                "brand": "brand name if visible/identifiable",
-                "color": "color(s) of the item",
-                "condition": "condition or state of the item",
-                "distinctive_features": ["list any notable features or characteristics"],
-                "is_main_focus": boolean indicating if this is the main focus of the image
+        Analyze this image and return a valid JSON array.
+        Format your response EXACTLY like this example:
+        [
+            {
+                "item_name": "Blue Nike Sneaker",
+                "details": {
+                    "type": "Athletic Footwear",
+                    "brand": "Nike",
+                    "color": "Blue and White",
+                    "condition": "New",
+                    "distinctive_features": ["Mesh upper", "White swoosh logo"],
+                    "is_main_focus": true
+                }
             }
-        }
+        ]
         
-        Return ONLY the JSON array of items, no additional text.
-        List the main focus item first, followed by other visible items.
-        Be precise and detailed about each item.
-        If brands are visible, make sure to include them accurately.
+        Important:
+        - Return ONLY the JSON array, no other text
+        - Use proper JSON syntax with double quotes
+        - Boolean values must be true or false (lowercase)
+        - Always include all fields, use empty string "" or empty array [] if no value
+        - List main focus item first, followed by background items
         """
 
         # Generate description

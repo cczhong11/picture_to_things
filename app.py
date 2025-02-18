@@ -49,7 +49,15 @@ def main():
 
                 if description:
                     try:
-                        items = json.loads(description)
+                        # Clean the response to ensure it's valid JSON
+                        cleaned_description = description.strip()
+                        if cleaned_description.startswith('```json'):
+                            cleaned_description = cleaned_description[7:]
+                        if cleaned_description.endswith('```'):
+                            cleaned_description = cleaned_description[:-3]
+                        cleaned_description = cleaned_description.strip()
+                        
+                        items = json.loads(cleaned_description)
                         st.write("### Items Detected:")
                         for item in items:
                             with st.expander(f"📦 {item['item_name']}" + (" (Main Focus)" if item['details']['is_main_focus'] else "")):
@@ -62,8 +70,9 @@ def main():
                                     st.write("**Distinctive Features:**")
                                     for feature in item['details']['distinctive_features']:
                                         st.write(f"- {feature}")
-                    except json.JSONDecodeError:
-                        st.error("Failed to parse analysis results")
+                    except json.JSONDecodeError as e:
+                        st.error(f"Failed to parse analysis results: {str(e)}")
+                        st.write("Raw response:")
                         st.code(description)
                 else:
                     st.error("Failed to analyze image")
