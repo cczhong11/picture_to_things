@@ -113,13 +113,8 @@ def main():
             import pandas as pd
             df = pd.DataFrame(st.session_state.table_data)
 
-                        # Display items in a more interactive format
-                        st.write(
-                            "Edit item names and use update buttons to search for new prices"
-                        )
-
-                        # Create columns for layout
-                        for index, row in df.iterrows():
+            # Create columns for layout
+            for index, row in df.iterrows():
                             with st.container():
                                 cols = st.columns([3, 2, 2, 2, 1])
 
@@ -193,15 +188,6 @@ def main():
                                             st.rerun()
 
                                 st.divider()
-                    except json.JSONDecodeError as e:
-                        st.error(f"Failed to parse analysis results: {str(e)}")
-                        st.write("Raw response:")
-                        st.code(description)
-                else:
-                    st.error("Failed to analyze image")
-
-                # Clean up temp file
-                os.remove(temp_path)
 
 
 if __name__ == "__main__":
